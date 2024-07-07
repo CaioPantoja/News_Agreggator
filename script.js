@@ -9,7 +9,7 @@ let LastArticleCount = 0
 function fetchNews(isSearching) {
     if (isLoading) return;
 
-    isLoading - true;
+    isLoading = true;
     let url
     if (isSearching) {
         const keyword = document.getElementById('searchKeyword').value;
