@@ -6,31 +6,35 @@ let currentKeyword = null;
 let isLoading = false;
 let LastArticleCount = 0
 
-function fetchNews(isSearching){
-    if(isSearching){
+function fetchNews(isSearching) {
+    if (isLoading) return;
+
+    isLoading - true;
+    let url
+    if (isSearching) {
         const keyword = document.getElementById('searchKeyword').value;
         url = `https://newsapi.org/v2/everything?q=${keyword}&apiKey=${API_KEY}&page=${currentPage}`;
-    }else{
+    } else {
         const category = currentCategory || document.getElementById('category').value;
         url = `https://newsapi.org/v2/top-headlines?country=us&category=${category}&apiKey=${API_KEY}&page=${currentPage}`;
     }
 
     fetch(url).then(response => response.json()).then(data => {
         const newsContainer = document.getElementById('newsContainer');
-        if(currentPage === 1){
+        if (currentPage === 1) {
             newsContainer.innerHTML = '';
         }
 
         const articlesWithImage = data.articles.filter(article => article.urlToImage);
 
-        if(articlesWithImage.length === 0 || articlesWithImage.length === LastArticleCount){
+        if (articlesWithImage.length === 0 || articlesWithImage.length === LastArticleCount) {
             displayNoMoreNews();
             return;
         }
 
         LastArticleCount = articlesWithImage.length;
 
-        articlesWithImage.forEach(article =>{
+        articlesWithImage.forEach(article => {
             const newsItem = `
             <div class="newsItem">
             <div class="newsImage">
@@ -53,35 +57,35 @@ function fetchNews(isSearching){
 
         currentPage++;
         isLoading = false;
-    }).catch(error =>{
+    }).catch(error => {
         console.error("There was an error fetching the news:", error);
         isLoading = false;
     });
-}    
+}
 
 
-function displayNoMoreNews(){
+function displayNoMoreNews() {
     const newsContainer = document.getElementById('newsContainer');
     newsContainer.innerHTML += '<p>No more news to load.</p>';
 }
 
-window.onscroll = function (){
-    if((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 10){
-        if(currentKeyword){
+window.onscroll = function () {
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 10) {
+        if (currentKeyword) {
             fetchNews(true);
-        }else{
+        } else {
             fetchNews(false);
         }
     }
 }
 
-document.getElementById('searchKeyword').addEventListener('input', function(){
+document.getElementById('searchKeyword').addEventListener('input', function () {
     currentPage = 1;
     currentCategory = null;
     currentKeyword = this.value;
 });
 
-document.getElementById('fetchCategory').addEventListener('click', function (){
+document.getElementById('fetchCategory').addEventListener('click', function () {
     currentPage = 1;
     currentKeyword = null;
     fetchNews(false);
